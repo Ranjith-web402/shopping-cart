@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Navigation Bar Styles */
+        .navbar {
+            position: fixed; /* Fix the navbar at the top */
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: orange;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it stays above other content */
+        }
+
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            padding: 14px 20px;
+            text-align: center;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        .navbar a:hover {
+            background-color: #575757;
+            border-radius: 4px;
+        }
+
+        /* Page Content Styles */
+        .page {
+            display: none; /* Hide all pages by default */
+            width: 100%;
+            max-width: 1200px;
+            margin: 60px auto 20px; /* Adjust for fixed navbar */
+            padding: 0 20px;
+            color: #161616; /* Text color for home and contact pages */
+        }
+
+        .visible {
+            display: block; /* Show the active page */
+        }
+
+        h1 {
+            font-size: 50px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        /* Home Page Background */
+        #home {
+            background: url('https://plus.unsplash.com/premium_photo-1670863088251-500151f2117b?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center/cover;
+            background-color: rgba(0, 0, 0, 0.4);
+            min-height: 100vh;
+            padding: 50px 20px;
+        }
+
+        /* Products Page Background */
+        #products {
+            background: url('https://images.unsplash.com/photo-1558481795-7f0a7c906f5e?q=80&w=1496&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center/cover;
+            background-color: rgba(0, 0, 0, 0.4);
+            min-height: 100vh;
+            padding: 50px 20px;
+        }
+
+        /* Contact Us Page Background */
+        #contact {
+            background: url('https://plus.unsplash.com/premium_photo-1681487933632-c9eda34fcaf1?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center/cover;
+            background-color: rgba(0, 0, 0, 0.4);
+            min-height: 100vh;
+            padding: 50px 20px;
+        }
+
+        /* Shopping Cart Styles */
+        .cart {
+            background-color: #fff;
+            padding: 50px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(245, 238, 238, 0.1);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+        }
+
+        .cart-items {
+            width: 70%;
+        }
+
+        .cart-summary {
+            width: 28%;
+            background-color: #f8f8f8;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .cart-table th, .cart-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .cart-table th {
+            background-color: #f8f8f8;
+            color: #555;
+        }
+
+        .cart-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            color: #333;
+            display: block;
+        }
+
+        .cart-item-price, .cart-item-total {
+            color: #555;
+        }
+
+        .cart-summary p {
+            font-size: 16px;
+            margin: 5px 0;
+            color: #333;
+        }
+
+        .cart-summary p strong {
+            color: #000000;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #FF9900;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .checkout-btn:hover {
+            background-color: #e68900;
+        }
+
+        .remove-btn {
+            color: #b12704;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .remove-btn:hover {
+            text-decoration: underline;
+        }
+
+        .cart-item-details {
+            display: flex;
+            align-items: center;
+        }
+
+        .cart-item-actions {
+            text-align: right;
+        }
+
+        /* Media Queries for Responsive Design */
+        @media screen and (max-width: 1200px) {
+            .cart {
+                flex-direction: column;
+                padding: 30px;
+            }
+            .cart-items,
+            .cart-summary {
+                width: 100%;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+            .cart-items {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            .cart-summary {
+                width: 100%;
+                margin-top: 0;
+            }
+            .navbar a {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            .cart-item img {
+                width: 50px;
+                height: 50px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            h1 {
+                font-size: 28px;
+                text-align: center;
+            }
+            .cart-summary p {
+                font-size: 14px;
+            }
+            .checkout-btn {
+                font-size: 14px;
+                padding: 12px;
+            }
+            .cart-table th, .cart-table td {
+                padding: 10px;
+            }
+            .cart-item img {
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="#" onclick="showPage('home')">Home</a>
+        <a href="#" onclick="showPage('products')">Products</a>
+        <a href="#" onclick="showPage('contact')">Contact Us</a>
+    </div>
+
+    <!-- Home Page Section -->
+    <div id="home" class="page visible">
+        <h1>Urban Mart</h1>
+        <p><left>This is the home page. Explore our site and shop for amazing products!</left></p>
+    </div>
+
+    <!-- Products Page Section -->
+    <div id="products" class="page">
+        <h1>Your Shopping Cart</h1>
+        <div class="cart">
+            <div class="cart-items">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cart-items-body">
+                        <tr class="cart-item">
+                            <td class="cart-item-details">
+                                <img src="https://5.imimg.com/data5/RB/CN/MY-39077357/mens-fashion-shirt.jpg" alt="Item 1">
+                                <span class="cart-item-name">Shirts for Men</span>
+                            </td>
+                            <td class="cart-item-price">$5.00</td>
+                            <td class="cart-item-quantity">
+                                <span>1</span>
+                            </td>
+                            <td class="cart-item-total">$5.00</td>
+                        </tr>
+                        <tr class="cart-item">
+                            <td class="cart-item-details">
+                                <img src="https://m.media-amazon.com/images/I/510uTHyDqGL._AC_UF1000,1000_QL80_.jpg" alt="Item 2">
+                                <span class="cart-item-name">Dell Laptop</span>
+                            </td>
+                            <td class="cart-item-price">$60.00</td>
+                            <td class="cart-item-quantity">
+                                <span>1</span>
+                            </td>
+                            <td class="cart-item-total">$60.00</td>
+                        </tr>
+                        <tr class="cart-item">
+                            <td class="cart-item-details">
+                                <img src="https://upload.wikimedia.org/wikipedia/en/e/ee/Front_%26_Back_Face_of_iPhone_16_Pro_Max.png" alt="Item 3">
+                                <span class="cart-item-name">iPhone 16 Pro Max</span>
+                            </td>
+                            <td class="cart-item-price">$100.00</td>
+                            <td class="cart-item-quantity">
+                                <span>1</span>
+                            </td>
+                            <td class="cart-item-total">$100.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="cart-summary">
+                <p><strong>Subtotal:</strong> </p>
+                <p><strong>Shipping:</strong> </p>
+                <p><strong>Total:</strong> </p>
+                <button class="checkout-btn">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Us Page Section -->
+    <div id="contact" class="page">
+        <h1>Contact Us</h1>
+        <p>support@urbanmart.com</p>
+        <strong>(123) 456-7890</strong>
+        <p>We are happy to assist you with any inquiries.</p>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="footer">
+        <p>@ All rights reserved to UrbanMart 2025</p>
+    </div>
+
+    <script>
+        // Function to show and hide pages
+        function showPage(pageId) {
+            // Hide all pages
+            var pages = document.querySelectorAll('.page');
+            pages.forEach(function(page) {
+                page.classList.remove('visible');
+            });
+
+            // Show the clicked page
+            document.getElementById(pageId).classList.add('visible');
+        }
+
+        // Function to update the cart total
+        function updateCartTotal() {
+            var cartItems = document.querySelectorAll('.cart-item');
+            var subtotal = 0;
+
+            cartItems.forEach(function(item) {
+                var price = parseFloat(item.querySelector('.cart-item-price').textContent.replace('$', ''));
+                var quantity = parseInt(item.querySelector('.cart-item-quantity span').textContent);
+                var total = price * quantity;
+                item.querySelector('.cart-item-total').textContent = '$' + total.toFixed(2);
+                subtotal += total;
+            });
+
+            var shipping = 5.00;
+            var totalCost = subtotal + shipping;
+
+            document.querySelector('.cart-summary p strong').textContent = '$' + subtotal.toFixed(2);
+            document.querySelector('.cart-summary p:nth-child(2) strong').textContent = '$' + shipping.toFixed(2);
+            document.querySelector('.cart-summary p:nth-child(3) strong').textContent = '$' + totalCost.toFixed(2);
+        }
+
+        // Call the update function when the page loads
+        window.onload = updateCartTotal;
+    </script>
+
+</body>
+</html>
